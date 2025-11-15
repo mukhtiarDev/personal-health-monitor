@@ -1,0 +1,12 @@
+echo "
+# Python virtual environment
+venv/
+__pycache__/
+
+# Secrets
+*.env
+
+# Database file
+*.db
+*.db-journal
+" > .gitignore
