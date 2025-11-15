@@ -1,87 +1,157 @@
 Personal Health Monitoring System (Multi-Agent)
 
-This project is a real-time, multi-agent system for monitoring personal health data. It simulates collecting data from a wearable, having AI agents analyze it, and presenting it on a live dashboard with a human-in-the-loop approval system.
+A real-time, multi-agent system that simulates wearable health data collection, automated AI analysis, human-in-the-loop approvals, and a live dashboard for monitoring.
 
-Project Features
+🚀 Overview
 
-Real-Time Simulation: Three separate processes run concurrently: a data simulator, an agent worker, and a UI dashboard.
+This project consists of three concurrently running components:
 
-A2A Communication: Agents communicate asynchronously using a SQLite database as a message queue (e.g., TrendAnalyzer creates an approval row, which EscalationAgent reads).
+Data Simulator – mimics a wearable device producing health metrics.
 
-MCP (Coordinated Plan): The worker.py implements a sequential pipeline (a form of round-robin), running the TrendAnalyzer first, then the EscalationAgent.
+Agent Worker – runs AI agents that analyze the data and coordinate responses.
 
-LRO with Human Approval: The TrendAnalyzer detects critical anomalies (e.g., heart rate > 160) and creates an approval request. This request appears on the dashboard, and a human user must click "Approve" before the EscalationAgent (simulates) contacting a doctor.
+Dashboard UI – displays live metrics, agent logs, and approval requests.
 
-Long Memory Recall: The TrendAnalyzer can query the entire history of the metrics table in the SQLite database to identify long-term trends.
+Agents communicate asynchronously via a SQLite message queue, and the system supports long-term trend analysis, human approval workflows, and real-time observability.
 
-Observability: A Streamlit dashboard shows live graphs of metrics, a real-time log of all agent actions, and a list of pending approvals.
+✨ Key Features
+1. Real-Time Multi-Process System
 
-File Structure
+Three processes run simultaneously:
 
-/personal-health-monitor/
+simulator.py – generates real-time health data
+
+worker.py – processes data using AI agents
+
+ui.py – visualizes activity in a Streamlit dashboard
+
+2. Asynchronous Agent-to-Agent Communication (A2A)
+
+Agents exchange messages through SQLite tables.
+
+Example:
+
+TrendAnalyzerAgent creates an approval request.
+
+EscalationAgent reads and responds once approved.
+
+3. MCP-Style Coordinated Plan
+
+worker.py executes agents in a fixed sequence (round-robin):
+
+TrendAnalyzerAgent
+
+EscalationAgent
+
+4. Human-in-the-Loop Approvals
+
+TrendAnalyzer flags critical anomalies (e.g., heart rate > 160).
+
+Generates a pending approval request visible in the dashboard.
+
+User must click Approve before escalation occurs.
+
+5. Long-Term Memory Recall
+
+Agents can access full historical metric logs via SQLite queries.
+
+Enables pattern detection and long-term trend analysis.
+
+6. Observability Dashboard
+
+The Streamlit UI provides:
+
+Live real-time metrics graph
+
+Agent action logs
+
+Pending human approval queue
+
+📁 File Structure
+personal-health-monitor/
 ├── .env
 ├── requirements.txt
-├── database.py         # Handles all SQLite database setup and functions
-├── agents.py           # Contains the logic for each agent
-├── simulator.py        # Process 1: The "wearable" data feed
-├── worker.py           # Process 2: The "agent brain" coordinator
-└── ui.py               # Process 3: The Streamlit dashboard
+├── database.py       # SQLite setup and DB functions
+├── agents.py         # Agent logic: TrendAnalyzer, EscalationAgent
+├── simulator.py      # Process 1: wearable data feed
+├── worker.py         # Process 2: agent coordinator (round-robin)
+└── ui.py             # Process 3: Streamlit dashboard
 
+⚙️ Setup Instructions
+1. Create the Project Folder
+mkdir personal-health-monitor
+cd personal-health-monitor
 
-Setup Instructions
+2. Add the Required Files
 
-Create Project Folder: Create a new folder named personal-health-monitor.
+Create:
 
-Create Files: Inside that folder, create all the files listed above (.env, requirements.txt, database.py, agents.py, simulator.py, worker.py, ui.py) and copy-paste their contents from the provided code.
+.env
 
-Create Python Environment (Recommended):
+requirements.txt
 
+database.py
+
+agents.py
+
+simulator.py
+
+worker.py
+
+ui.py
+
+Paste the provided code into each.
+
+3. Create a Python Virtual Environment (Recommended)
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
+# Windows:
+# venv\Scripts\activate
 
-
-Install Dependencies:
-
+4. Install Dependencies
 pip install -r requirements.txt
 
+▶️ Running the System (Real-Time Execution)
 
-How to Run (The "Real-Time" Part)
+You must open three terminals and run each component separately.
 
-You must run three separate terminals (or Command Prompts) at the same time.
+🖥️ Terminal 1 — Data Simulator
 
-Terminal 1: Run the Data Simulator
-
-This script acts as your "smart watch," feeding new data into the system every 3 seconds.
+Simulates a wearable sending new data every 3 seconds.
 
 python simulator.py
 
 
-You will see it print messages like "SIM: Added metric..."
+Output example:
 
-Terminal 2: Run the Agent Worker
+SIM: Added metric...
 
-This script is the "brain" of the operation. It runs the agents in a loop, watching for new data to analyze.
+🧠 Terminal 2 — Agent Worker
+
+Runs TrendAnalyzerAgent → EscalationAgent in a loop.
 
 python worker.py
 
 
-You will see it print messages like "WORKER: Running TrendAnalyzerAgent..."
+Output example:
 
-Terminal 3: Run the Streamlit UI
+WORKER: Running TrendAnalyzerAgent...
 
-This script launches the web dashboard.
+📊 Terminal 3 — Streamlit Dashboard
+
+Launches the monitoring interface.
 
 streamlit run ui.py
 
 
-This will automatically open the dashboard in your web browser. The dashboard will auto-refresh every 5 seconds.
+The dashboard auto-refreshes every 5 seconds.
 
-You can now interact with the system:
+🧪 What You Can Observe
 
-Watch the "Live Metrics" graph update as the Simulator adds data.
+Live Metrics updating in real time
 
-Watch the "Agent Log" update as the Worker analyzes the data.
+Agent Log showing each agent’s actions
 
-When a critical alert happens (e.g., heart rate > 160), watch an item appear in "Pending Approvals."
+Pending Approvals generated by anomaly detection
 
-Click the "Approve" button, and you will see the Worker log that the EscalationAgent has (simulated) contacting a doctor.
+Clicking Approve triggers the EscalationAgent to simulate contacting a doctor
